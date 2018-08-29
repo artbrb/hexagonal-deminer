@@ -1,30 +1,80 @@
 package sample;
 
-import java.awt.*;
+import static java.lang.Math.PI;
+import static java.lang.Math.ceil;
+import static java.lang.StrictMath.cos;
+import static java.lang.StrictMath.sin;
+import static java.lang.StrictMath.sqrt;
+import static javafx.scene.paint.Paint.valueOf;
+import static sample.Main.SIZE_OF_FIELD;
+import static sample.Main.countOpenedCells;
+import static sample.Main.field;
 
-public class Hexagon {
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
+
+
+
+import javafx.scene.input.MouseEvent;
+
+
+public class Hexagon extends Polygon {
+    private static final int BLOCK_SIZE = 20;
     private boolean isOpen;
     private boolean isMine;
     private boolean isFlag;
-    private boolean bangMine;
     private int numbersOfBombsNear;
+    private boolean bangMine;
+//    private final int intermediateDistance;
+    private static int radius = 15;
 
-    void open() {
+    public int rowCounterHexagons =  (int) ceil(500 / (radius * 2));
+    public int columnCounterHexagons = (int) ceil(500 / (radius * 2 * sqrt(3)));
+
+
+    public static Polygon createHexagon(int column, int row, int radius, int intermediateDistance){
+        Polygon hex = new Polygon();
+
+        for (int i = 0; i < 6; i++) {
+
+            hex.getPoints().add(radius * sin(i * PI / 3));
+            hex.getPoints().add(radius * cos(i * PI / 3));
+
+        }
+
+
+        double halfHeight = sqrt(3) * radius / 2;
+        hex.setTranslateX((row * 2 - column % 2) * halfHeight + row * intermediateDistance + 36 );
+        hex.setTranslateY(column*(intermediateDistance + radius*1.5) + 36);
+        hex.setFill(valueOf("Gray"));
+        return hex;
+    }
+
+
+
+
+    public static void mouseListner(MouseEvent event) {
+        int x = (int) ceil (event.getSceneX() / (radius * 2));
+        int y = (int) ceil (event.getSceneY() / (radius * 2 * sqrt(3)));
+        if (x < SIZE_OF_FIELD && y < SIZE_OF_FIELD && x >= 0 && y >= 0) {
+            field[x][y].setFill(valueOf("Red"));
+        }
+    }
+    void openHexagon() {
         isOpen = true;
         bangMine = isMine;
-        int countOpenedCells = 0;
-        if (!isMine) countOpenedCells++;
+        countOpenedCells++;
     }
 
     boolean isNotOpen() {
         return !isOpen;
     }
 
-    boolean mine() {
+    boolean setMineStatus() {
         return isMine = true;
     }
 
-    boolean isMined() {
+    boolean getStatusMined() {
         return isMine;
     }
 
@@ -39,7 +89,20 @@ public class Hexagon {
         return numbersOfBombsNear;
     }
 
-    void pain() {
+    void paintingBomb() {
 
     }
+
+    public static Circle paintBomb(int x, int y) {
+        Circle circle = new Circle(x, y, 35);
+        circle.setFill(valueOf("Green"));
+        return circle;
+    }
+
+    void paintingString() {
+
+    }
+
+
+
 }

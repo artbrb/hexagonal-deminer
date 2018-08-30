@@ -10,6 +10,7 @@ import static sample.Main.SIZE_OF_FIELD;
 import static sample.Main.countOpenedCells;
 import static sample.Main.field;
 
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 
@@ -17,10 +18,12 @@ import javafx.scene.shape.Polygon;
 
 import javafx.scene.input.MouseEvent;
 
+import java.awt.event.MouseListener;
+
 
 public class Hexagon extends Polygon {
     private static final int BLOCK_SIZE = 20;
-    private boolean isOpen;
+    private boolean isOpen = false;
     private boolean isMine;
     private boolean isFlag;
     private int numbersOfBombsNear;
@@ -42,23 +45,34 @@ public class Hexagon extends Polygon {
 
         }
 
+        Circle cir = new Circle();
+        cir.setCenterX(column);
+        cir.setCenterY(row);
+        cir.setRadius(20);
+
 
         double halfHeight = sqrt(3) * radius / 2;
         hex.setTranslateX((row * 2 - column % 2) * halfHeight + row * intermediateDistance + 36 );
         hex.setTranslateY(column*(intermediateDistance + radius*1.5) + 36);
-        hex.setFill(valueOf("Gray"));
+        hex.setFill(Paint.valueOf("Gray"));
+
         return hex;
     }
 
 
 
 
-    public static void mouseListner(MouseEvent event) {
+    public static boolean mouseListener(MouseEvent event) {
         int x = (int) ceil (event.getSceneX() / (radius * 2));
         int y = (int) ceil (event.getSceneY() / (radius * 2 * sqrt(3)));
         if (x < SIZE_OF_FIELD && y < SIZE_OF_FIELD && x >= 0 && y >= 0) {
-            field[x][y].setFill(valueOf("Red"));
+//            field[x][y].setFill(Paint.valueOf("Red"));
+//            field[x][y].isOpen = true;
+//            return field[x][y].isOpen;
+            return true;
         }
+//        return field[x][y].isOpen;
+        return true;
     }
     void openHexagon() {
         isOpen = true;

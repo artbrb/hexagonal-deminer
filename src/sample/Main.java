@@ -1,13 +1,12 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import static sample.Hexagon.mouseListner;
+
 import static sample.Hexagon.paintBomb;
 
 
@@ -35,19 +34,15 @@ public class Main extends Application {
         Scene scene = new Scene(root, 800, 800);
         primaryStage.setScene(scene);
         scene.setFill(Paint.valueOf("Blue"));
-        scene.setOnMousePressed(Hexagon::mouseListner);
-
-
+        scene.setOnMousePressed(Hexagon::mouseListener);
 
 
 
         for (int column = 0; column < columns; column++) {
             for (int row = 0; row < rows; row++) {
                 Hexagon hex = new Hexagon();
-                Circle cir = new Circle();
-                cir.setCenterX(column);
-                cir.setCenterY(row);
-                cir.setRadius(20);
+
+
                 root.getChildren().add(Hexagon.createHexagon(column,row, 18, 1));
                 root.getChildren().add(paintBomb(column, row));
                 hex = field[column][row];

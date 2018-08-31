@@ -6,19 +6,22 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 import static sample.Hexagon.paintBomb;
 
 
 
 public class Main extends Application {
+    public double xOfMouse;
+    public double yOfMouse;
     public boolean bangMine;
     public static int countOpenedCells;
-    private final int columns = 20;
-    private final int rows = 20;
     final String FLAG_ICON = "flag";
     public static int SIZE_OF_FIELD = 20;
     public static Hexagon[][] field = new Hexagon[SIZE_OF_FIELD][SIZE_OF_FIELD];
+    List list = new ArrayList<Integer>();
 
     public void initField() {
 
@@ -28,7 +31,7 @@ public class Main extends Application {
 
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) {
         Group root = new Group();
         primaryStage.setTitle("hexagonal deminer");
         Scene scene = new Scene(root, 800, 800);
@@ -36,22 +39,31 @@ public class Main extends Application {
         scene.setFill(Paint.valueOf("Blue"));
         scene.setOnMousePressed(Hexagon::mouseListener);
 
+        for (int column = 0; column < SIZE_OF_FIELD; column++) {
+            for (int row = 0; row < SIZE_OF_FIELD; row++) {
 
+                Hexagon hex = new Hexagon(0, 20, 2);
+                root.getChildren().add(Hexagon.createHexagon(column, row, 20, 2));
+                field[column][row] = hex;
+                hex.setFill(Paint.valueOf("White"));
+                root.getChildren().add(hex);
 
-        for (int column = 0; column < columns; column++) {
-            for (int row = 0; row < rows; row++) {
-                Hexagon hex = new Hexagon();
-
-
-                root.getChildren().add(Hexagon.createHexagon(column,row, 18, 1));
-                root.getChildren().add(paintBomb(column, row));
-                hex = field[column][row];
             }
         }
 
+
+//        scene.setOnMousePressed(e -> {
+//            if (e.isControlDown())
+//                xOfMouse = e.getSceneX();
+//            yOfMouse = e.getSceneY();
+//        });
+
+
+
+
+
         primaryStage.setResizable(false);
         primaryStage.show();
-
 
 
     }

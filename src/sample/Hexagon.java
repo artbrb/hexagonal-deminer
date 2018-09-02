@@ -11,14 +11,11 @@ import static sample.Main.SIZE_OF_FIELD;
 import static sample.Main.countOpenedCells;
 import static sample.Main.field;
 
-import javafx.event.EventHandler;
+
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.input.MouseEvent;
-
-import java.awt.*;
-import java.awt.event.MouseListener;
 
 
 public class Hexagon extends Polygon {
@@ -31,7 +28,9 @@ public class Hexagon extends Polygon {
     private int intermediateDistance;
     private int radius;
 //    public int rowCounterHexagons =  (int) ceil(500 / (radius * 2));
-    public int columnCounterHexagons = (int) ceil(500 / (radius * 2 * sqrt(3)));
+//    public int columnCounterHexagons = (int) ceil(500 / (radius * 2 * sqrt(3)));
+
+
 
     Hexagon( int numbersOfBombsNear , int radius, int intermediateDistance) {
         this.isOpen = isOpen;
@@ -41,12 +40,14 @@ public class Hexagon extends Polygon {
         this.radius = radius;
         this.intermediateDistance = intermediateDistance;
 
-//        createHexagon(SIZE_OF_FIELD, SIZE_OF_FIELD, radius, intermediateDistance);
+
+
+
 
     }
 
 
-    public static Polygon createHexagon(int column, int row, int radius, int intermediateDistance){
+    public  Polygon createHexagon(int column, int row, int radius, int intermediateDistance) {
         Polygon hex = new Polygon();
         Circle cir = new Circle();
 
@@ -62,13 +63,27 @@ public class Hexagon extends Polygon {
         hex.setTranslateY(column*(intermediateDistance + radius*1.5) + 36);
         hex.setFill(Paint.valueOf("Gray"));
 
-        hex.addEventHandler(MouseEvent.MOUSE_CLICKED,
-                (EventHandler) e -> hex.setFill(Paint.valueOf("Red")));
 
-//        cir.setRadius(50);
-//        cir.setTranslateX((row * 2 - column % 2) * halfHeight + row * intermediateDistance + 36 );
-//        cir.setTranslateY(column*(intermediateDistance + radius*1.5) + 36);
-//        cir.setFill(Paint.valueOf("Blue"));
+        hex.setOnMousePressed((MouseEvent event) -> {
+            if (event.isPrimaryButtonDown()) {
+                hex.setFill(Paint.valueOf("Red"));
+            }
+            if (event.isSecondaryButtonDown()) {
+                hex.setFill(Paint.valueOf("Green"));
+            }
+
+        });
+
+
+
+
+
+
+
+        cir.setRadius(50);
+        cir.setTranslateX((row * 2 - column % 2) * halfHeight + row * intermediateDistance + 36 );
+        cir.setTranslateY(column*(intermediateDistance + radius*1.5) + 36);
+        cir.setFill(Paint.valueOf("Blue"));
 
 
         return hex;
@@ -80,31 +95,14 @@ public class Hexagon extends Polygon {
         return hexagon;
     }
 
-//    public static Circle createCircle(int column, int row, int radius, int intermediateDistance) {
-//        Circle cir = new Circle();
-//        double halfHeight = sqrt(3) * radius / 2;
-//        cir.setRadius(50);
-//        cir.setTranslateX((row * 2 - column % 2) * halfHeight + row * intermediateDistance + 36 );
-//        cir.setTranslateY(column*(intermediateDistance + radius*1.5) + 36);
-//        cir.setFill(Paint.valueOf("Blue"));
-//        return cir;
-//    }
-
-
-
-
-    public static boolean mouseListener(MouseEvent event) {
-        int x = (int) ceil (event.getSceneX() / (18 * 2));
-        int y = (int) ceil (event.getSceneY() / (18 * 2 * sqrt(3)));
-        if (x < SIZE_OF_FIELD && y < SIZE_OF_FIELD && x >= 0 && y >= 0) {
-//            field[x][y].setFill(Paint.valueOf("Red"));
-//            field[x][y].isOpen = true;
-//            return field[x][y].isOpen;
-            return true;
+    private Hexagon setMouse(MouseEvent mouse) {
+        if (mouse.isPrimaryButtonDown()) {
+            field[2][2].setFill(Paint.valueOf("White"));
+            return field[2][2];
         }
-//        return field[x][y].isOpen;
-        return true;
+        return field[2][2];
     }
+
     void openHexagon() {
         isOpen = true;
         bangMine = isMine;

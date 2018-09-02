@@ -14,18 +14,12 @@ import static sample.Hexagon.paintBomb;
 
 
 public class Main extends Application {
-    public double xOfMouse;
-    public double yOfMouse;
     public boolean bangMine;
     public static int countOpenedCells;
     final String FLAG_ICON = "flag";
     public static int SIZE_OF_FIELD = 20;
     public static Hexagon[][] field = new Hexagon[SIZE_OF_FIELD][SIZE_OF_FIELD];
     List list = new ArrayList<Integer>();
-
-    public void initField() {
-
-    }
 
 
 
@@ -37,29 +31,19 @@ public class Main extends Application {
         Scene scene = new Scene(root, 800, 800);
         primaryStage.setScene(scene);
         scene.setFill(Paint.valueOf("Blue"));
-        scene.setOnMousePressed(Hexagon::mouseListener);
 
         for (int column = 0; column < SIZE_OF_FIELD; column++) {
             for (int row = 0; row < SIZE_OF_FIELD; row++) {
 
                 Hexagon hex = new Hexagon(0, 20, 2);
-                root.getChildren().add(Hexagon.createHexagon(column, row, 20, 2));
+                root.getChildren().add(hex.createHexagon(column, row, 20, 2));
                 field[column][row] = hex;
                 hex.setFill(Paint.valueOf("White"));
+
                 root.getChildren().add(hex);
 
             }
         }
-
-
-//        scene.setOnMousePressed(e -> {
-//            if (e.isControlDown())
-//                xOfMouse = e.getSceneX();
-//            yOfMouse = e.getSceneY();
-//        });
-
-
-
 
 
         primaryStage.setResizable(false);
@@ -72,4 +56,12 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
+    public void openCells() {
+
+    }
+    public void checkOutOfField() {
+
+    }
+
 }

@@ -9,17 +9,22 @@ import javafx.stage.Stage;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-import static sample.Hexagon.paintBomb;
+
 
 
 
 public class Main extends Application {
     public boolean bangMine;
-    public static int countOpenedCells;
+    public static int countOpenedHexagons;
     final String FLAG_ICON = "flag";
     public static int SIZE_OF_FIELD = 20;
+    public static int numberOfMines = 20;
+    public static int xCoordinateBang;
+    public static int yCoordinateBang;
     public static Hexagon[][] field = new Hexagon[SIZE_OF_FIELD][SIZE_OF_FIELD];
     List list = new ArrayList<Integer>();
+    public static boolean win = false;
+    public static boolean bangAndLoss = false;
 
 
 
@@ -35,10 +40,12 @@ public class Main extends Application {
         for (int column = 0; column < SIZE_OF_FIELD; column++) {
             for (int row = 0; row < SIZE_OF_FIELD; row++) {
 
-                Hexagon hex = new Hexagon(0, 20, 2);
+                Hexagon hex = new Hexagon(20, 2);
                 root.getChildren().add(hex.createHexagon(column, row, 20, 2));
                 field[column][row] = hex;
-                hex.setFill(Paint.valueOf("White"));
+                hex.columnСoordinate =column;
+                hex.rowCoordinate =row;
+
 
                 root.getChildren().add(hex);
 
@@ -57,10 +64,14 @@ public class Main extends Application {
         launch(args);
     }
 
-    public void openCells() {
+    public static void openHexagons(int column, int row) {
 
     }
     public void checkOutOfField() {
+
+    }
+
+    public static void restart() {
 
     }
 

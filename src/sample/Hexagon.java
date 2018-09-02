@@ -1,21 +1,14 @@
 package sample;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.ceil;
-import static java.lang.Math.incrementExact;
-import static java.lang.StrictMath.cos;
-import static java.lang.StrictMath.sin;
-import static java.lang.StrictMath.sqrt;
-import static javafx.scene.paint.Paint.valueOf;
-import static sample.Main.SIZE_OF_FIELD;
-import static sample.Main.countOpenedCells;
-import static sample.Main.field;
-
-
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
-import javafx.scene.input.MouseEvent;
+
+import static java.lang.Math.PI;
+import static java.lang.StrictMath.*;
+import static javafx.scene.paint.Paint.valueOf;
+import static sample.Main.*;
 
 
 public class Hexagon extends Polygon {
@@ -27,20 +20,22 @@ public class Hexagon extends Polygon {
     private boolean bangMine;
     private int intermediateDistance;
     private int radius;
+    public int columnСoordinate;
+    public int rowCoordinate;
 //    public int rowCounterHexagons =  (int) ceil(500 / (radius * 2));
 //    public int columnCounterHexagons = (int) ceil(500 / (radius * 2 * sqrt(3)));
 
 
 
-    Hexagon( int numbersOfBombsNear , int radius, int intermediateDistance) {
+    Hexagon(int radius, int intermediateDistance) {
         this.isOpen = isOpen;
         this.isMine = isMine;
         this.isFlag = isFlag;
         this.numbersOfBombsNear = numbersOfBombsNear;
         this.radius = radius;
         this.intermediateDistance = intermediateDistance;
-
-
+        this.columnСoordinate = columnСoordinate;
+        this.rowCoordinate = rowCoordinate;
 
 
 
@@ -65,18 +60,27 @@ public class Hexagon extends Polygon {
 
 
         hex.setOnMousePressed((MouseEvent event) -> {
-            if (event.isPrimaryButtonDown()) {
-                hex.setFill(Paint.valueOf("Red"));
+            if (!bangMine && !win) {
+                if (event.isPrimaryButtonDown()) {
+                    if (field[columnСoordinate][rowCoordinate].isNotOpen()) {
+                        openHexagons(columnСoordinate, rowCoordinate);
+                        boolean check = countOpenedHexagons == ((SIZE_OF_FIELD * SIZE_OF_FIELD) - numberOfMines);
+                        win = check;
+                        if (bangAndLoss) {
+                            xCoordinateBang = columnСoordinate;
+                            yCoordinateBang = rowCoordinate;
+                        }
+                    }
             }
             if (event.isSecondaryButtonDown()) {
-                hex.setFill(Paint.valueOf("Green"));
+                    field[columnСoordinate][rowCoordinate].invertFlag();
+            }
+            if (bangMine || win) {
+                    restart();
             }
 
+            }
         });
-
-
-
-
 
 
 
@@ -90,23 +94,14 @@ public class Hexagon extends Polygon {
 
     }
 
-    public static Polygon paintHex(Hexagon hexagon) {
-         hexagon.setFill(Paint.valueOf("White"));
-        return hexagon;
-    }
 
-    private Hexagon setMouse(MouseEvent mouse) {
-        if (mouse.isPrimaryButtonDown()) {
-            field[2][2].setFill(Paint.valueOf("White"));
-            return field[2][2];
-        }
-        return field[2][2];
-    }
+
+
 
     void openHexagon() {
         isOpen = true;
         bangMine = isMine;
-        countOpenedCells++;
+        countOpenedHexagons++;
     }
 
     boolean isNotOpen() {

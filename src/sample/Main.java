@@ -42,6 +42,7 @@ public class Main extends Application {
 
         createField(root);
 
+
 //        Circle circle = new Circle(6 * 40, 6 * 40, 13);
 //        circle.setFill(Paint.valueOf("Red"));
 //        root.getChildren().add(circle);
@@ -123,19 +124,7 @@ public class Main extends Application {
 //        }
 //        return null;
 //    }
-//    void openCells(int x, int y) { // recursive procedure of opening the cells
-//        if (x < 0 || x > FIELD_SIZE - 1 || y < 0 || y > FIELD_SIZE - 1) return; // wrong coordinates
-//        if (!field[y][x].isNotOpen()) return; // cell is already open
-//        field[y][x].open();
-//        if (field[y][x].getCountBomb() > 0 || bangMine) return; // the cell is not empty
-//        for (int dx = -1; dx < 2; dx++)
-//            for (int dy = -1; dy < 2; dy++) openCells(x + dx, y + dy);
-//    }
 
-
-//    public static Hexagon repaintHexagon() {
-//
-//    }
 
 
     public static void hexagonsAround() {

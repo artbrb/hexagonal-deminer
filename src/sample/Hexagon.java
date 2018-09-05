@@ -4,11 +4,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
-import javafx.util.Pair;
 
 import static java.lang.Math.PI;
 import static java.lang.StrictMath.*;
-import static javafx.scene.paint.Paint.valueOf;
 import static sample.Main.*;
 
 
@@ -18,11 +16,11 @@ public class Hexagon extends Polygon {
     public boolean isMine = false;
     public boolean isFlag = false;
     public int numbersOfBombsNear = 0;
-    private boolean bangMine = false;
     private int intermediateDistance;
     private int radius;
     public int columnСoordinate;
     public int rowCoordinate;
+    public String color = "#666699";
 //    public int rowCounterHexagons =  (int) ceil(500 / (radius * 2));
 //    public int columnCounterHexagons = (int) ceil(500 / (radius * 2 * sqrt(3)));
 
@@ -36,6 +34,7 @@ public class Hexagon extends Polygon {
         this.intermediateDistance = intermediateDistance;
         this.columnСoordinate = columnСoordinate;
         this.rowCoordinate = rowCoordinate;
+        this.color = color;
 
 
     }
@@ -56,10 +55,12 @@ public class Hexagon extends Polygon {
 
 
         hexagon.setOnMousePressed((MouseEvent event) -> {
-            if (!bangMine && !win) {
+            if (!bangAndLoss && !win) {
                 if (event.isPrimaryButtonDown()) {
                     if (isNotOpen()) {
-                        openHexagons(columnСoordinate, rowCoordinate);
+//                        hexagon.setFill(Paint.valueOf("#a6a6a6"));
+                        color = "#a6a6a6";
+                        openHexagons(rowCoordinate, columnСoordinate);
                         boolean check = countOpenedHexagons == ((SIZE_OF_FIELD * SIZE_OF_FIELD) - numberOfMines);
                         win = check;
                         if (bangAndLoss) {
@@ -71,23 +72,24 @@ public class Hexagon extends Polygon {
                 if (event.isSecondaryButtonDown()) {
                     invertFlag();
                 }
-                if (bangMine || win) {
+
+                if (bangAndLoss || win) {
                     restart();
                 }
-
+                hexagon.setFill(Paint.valueOf(color));
             }
         });
 
-        return hexagon;
 
+        return hexagon;
     }
 
 
-    void openHexagon() {
-
+    public  void openHexagon() {
         if (!isMine) countOpenedHexagons++;
-        bangMine = isMine;
+        bangAndLoss = isMine;
         isOpen = true;
+
     }
 
     boolean isNotOpen() {

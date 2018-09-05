@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -39,13 +38,11 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         scene.setFill(Paint.valueOf("#648f6e"));
 
-        Circle circle = new Circle(6 * 40, 6 * 40, 13);
-        circle.setFill(Paint.valueOf("Red"));
-
         createField(root);
-        root.getChildren().add(circle);
 
-
+//        Circle circle = new Circle(6 * 40, 6 * 40, 13);
+//        circle.setFill(Paint.valueOf("Red"));
+//        root.getChildren().add(circle);
 
         primaryStage.setResizable(false);
         primaryStage.show();
@@ -108,8 +105,36 @@ public class Main extends Application {
     }
 
     public static void openHexagons(int row, int column) {
+        if (field[row][column].isNotOpen() && !bangAndLoss && field[row][column].getCountBomb() == 0)  {
+
+            field[row][column].openHexagon();
+
+
+            field[row][column].setFill(Paint.valueOf("#a6a6a6"));
+            for (Pair<Integer, Integer> move : movesAround) {
+                if (checkOutOfField(row, column, move)) {
+                    field[row + move.getKey()][column + move.getValue()].color = "#a6a6a6";
+
+                    openHexagons(row + move.getKey(), column + move.getValue());
+                }
+            }
+        }
 
     }
+//    void openCells(int x, int y) { // recursive procedure of opening the cells
+//        if (x < 0 || x > FIELD_SIZE - 1 || y < 0 || y > FIELD_SIZE - 1) return; // wrong coordinates
+//        if (!field[y][x].isNotOpen()) return; // cell is already open
+//        field[y][x].open();
+//        if (field[y][x].getCountBomb() > 0 || bangMine) return; // the cell is not empty
+//        for (int dx = -1; dx < 2; dx++)
+//            for (int dy = -1; dy < 2; dy++) openCells(x + dx, y + dy);
+//    }
+
+
+//    public static Hexagon repaintHexagon() {
+//
+//    }
+
 
     public static void hexagonsAround() {
         movesAround.add(new Pair<>(-1, -1));
@@ -120,7 +145,7 @@ public class Main extends Application {
         movesAround.add(new Pair<>(+1, 0));
     }
 
-    public boolean checkOutOfField( int row, int column, Pair<Integer, Integer> coordinates) {
+    public static boolean checkOutOfField(int row, int column, Pair<Integer, Integer> coordinates) {
         int incrementRow = row + coordinates.getKey();
         int incrementColumn = column + coordinates.getValue();
         return 0 <= incrementRow && incrementRow < SIZE_OF_FIELD &&

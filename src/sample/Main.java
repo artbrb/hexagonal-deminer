@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Random;
 
 
+
+
 public class Main extends Application {
     public static List<Pair<Integer,Integer>> movesAround = new ArrayList<>();
     public boolean bangMine;
@@ -104,23 +106,23 @@ public class Main extends Application {
 
     }
 
-    public static void openHexagons(int row, int column) {
-        if (field[row][column].isNotOpen() && !bangAndLoss && field[row][column].getCountBomb() == 0)  {
-
-            field[row][column].openHexagon();
-
-
-            field[row][column].setFill(Paint.valueOf("#a6a6a6"));
-            for (Pair<Integer, Integer> move : movesAround) {
-                if (checkOutOfField(row, column, move)) {
-                    field[row + move.getKey()][column + move.getValue()].color = "#a6a6a6";
-
-                    openHexagons(row + move.getKey(), column + move.getValue());
-                }
-            }
-        }
-
-    }
+//    public static Hexagon openHexagons(int row, int column) {
+//        if (field[row][column].isNotOpen() && !bangAndLoss && field[row][column].getCountBomb() == 0)  {
+//
+//            field[row][column].openHexagon();
+//
+//
+//            field[row][column].setFill(Paint.valueOf("#a6a6a6"));
+//            for (Pair<Integer, Integer> move : movesAround) {
+//                if (checkOutOfField(row, column, move)) {
+//
+//
+//                    openHexagons(row + move.getKey(), column + move.getValue());
+//                }
+//            }
+//        }
+//        return null;
+//    }
 //    void openCells(int x, int y) { // recursive procedure of opening the cells
 //        if (x < 0 || x > FIELD_SIZE - 1 || y < 0 || y > FIELD_SIZE - 1) return; // wrong coordinates
 //        if (!field[y][x].isNotOpen()) return; // cell is already open

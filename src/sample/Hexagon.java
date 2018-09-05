@@ -4,6 +4,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
+import javafx.util.Pair;
 
 import static java.lang.Math.PI;
 import static java.lang.StrictMath.*;
@@ -20,7 +21,6 @@ public class Hexagon extends Polygon {
     private int radius;
     public int columnСoordinate;
     public int rowCoordinate;
-    public String color = "#666699";
 //    public int rowCounterHexagons =  (int) ceil(500 / (radius * 2));
 //    public int columnCounterHexagons = (int) ceil(500 / (radius * 2 * sqrt(3)));
 
@@ -34,7 +34,6 @@ public class Hexagon extends Polygon {
         this.intermediateDistance = intermediateDistance;
         this.columnСoordinate = columnСoordinate;
         this.rowCoordinate = rowCoordinate;
-        this.color = color;
 
 
     }
@@ -58,14 +57,13 @@ public class Hexagon extends Polygon {
             if (!bangAndLoss && !win) {
                 if (event.isPrimaryButtonDown()) {
                     if (isNotOpen()) {
-//                        hexagon.setFill(Paint.valueOf("#a6a6a6"));
-                        color = "#a6a6a6";
-                        openHexagons(rowCoordinate, columnСoordinate);
+                        openHexagon();
                         boolean check = countOpenedHexagons == ((SIZE_OF_FIELD * SIZE_OF_FIELD) - numberOfMines);
                         win = check;
                         if (bangAndLoss) {
                             rowCoordinateBang = rowCoordinate;
                             columnCoordinateBang = columnСoordinate;
+                            hexagon.setFill(Paint.valueOf("Red"));
                         }
                     }
                 }
@@ -76,13 +74,20 @@ public class Hexagon extends Polygon {
                 if (bangAndLoss || win) {
                     restart();
                 }
-                hexagon.setFill(Paint.valueOf(color));
             }
         });
+
+        hexagon.setOnMouseExited((MouseEvent event) -> {
+            if (numbersOfBombsNear == 0 && isNotOpen() && !getStatusMined()) {
+                hexagon.setFill(Paint.valueOf("#a6a6a6"));
+            }
+            });
 
 
         return hexagon;
     }
+
+
 
 
     public  void openHexagon() {

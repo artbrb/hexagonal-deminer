@@ -4,7 +4,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
-import javafx.util.Pair;
 
 import static java.lang.Math.PI;
 import static java.lang.StrictMath.*;
@@ -21,26 +20,18 @@ public class Hexagon extends Polygon {
     private int radius;
     public int columnСoordinate;
     public int rowCoordinate;
-//    public int rowCounterHexagons =  (int) ceil(500 / (radius * 2));
-//    public int columnCounterHexagons = (int) ceil(500 / (radius * 2 * sqrt(3)));
+
 
 
     Hexagon(int radius, int intermediateDistance) {
-        this.isOpen = isOpen;
-        this.isMine = isMine;
-        this.isFlag = isFlag;
-        this.numbersOfBombsNear = numbersOfBombsNear;
         this.radius = radius;
         this.intermediateDistance = intermediateDistance;
-        this.columnСoordinate = columnСoordinate;
-        this.rowCoordinate = rowCoordinate;
-
 
     }
 
 
-    public Polygon createHexagon(int row, int column, int radius, int intermediateDistance) {
-        Polygon hexagon = new Polygon();
+    public Hexagon createHexagon(int row, int column, int radius, int intermediateDistance) {
+        Hexagon hexagon = new Hexagon(20, 2);
 
         for (int i = 0; i < 6; i++) {
             hexagon.getPoints().add(radius * sin(i * PI / 3));
@@ -56,33 +47,20 @@ public class Hexagon extends Polygon {
         hexagon.setOnMousePressed((MouseEvent event) -> {
             if (!bangAndLoss && !win) {
                 if (event.isPrimaryButtonDown()) {
-                    if (isNotOpen()) {
-                        openHexagon();
-                        boolean check = countOpenedHexagons == ((SIZE_OF_FIELD * SIZE_OF_FIELD) - numberOfMines);
-                        win = check;
-                        if (bangAndLoss) {
-                            rowCoordinateBang = rowCoordinate;
-                            columnCoordinateBang = columnСoordinate;
-                            hexagon.setFill(Paint.valueOf("Red"));
-                        }
-                    }
+                    openHexagons(hexagon.rowCoordinate, hexagon.columnСoordinate);
+
+                    boolean check = countOpenedHexagons == ((SIZE_OF_FIELD * SIZE_OF_FIELD) - numberOfMines);
+                    win = check;
                 }
                 if (event.isSecondaryButtonDown()) {
                     invertFlag();
                 }
 
-                if (bangAndLoss || win) {
+                if (win) {
                     restart();
                 }
             }
         });
-
-        hexagon.setOnMouseExited((MouseEvent event) -> {
-            if (numbersOfBombsNear == 0 && isNotOpen() && !getStatusMined()) {
-                hexagon.setFill(Paint.valueOf("#a6a6a6"));
-            }
-            });
-
 
         return hexagon;
     }
@@ -97,7 +75,7 @@ public class Hexagon extends Polygon {
 
     }
 
-    boolean isNotOpen() {
+    boolean notOpen() {
         return !isOpen;
     }
 
@@ -109,15 +87,11 @@ public class Hexagon extends Polygon {
         return isMine;
     }
 
-    public boolean invertFlag() {
-        return isFlag = !isFlag;
+    public void invertFlag() {
+        isFlag = !isFlag;
     }
 
-    void setCountBomb(int count) {
-        numbersOfBombsNear = count;
-    }
-
-    int getCountBomb() {
+    int getBombCount() {
         return numbersOfBombsNear;
     }
 
@@ -126,10 +100,8 @@ public class Hexagon extends Polygon {
     }
 
 
-    public static Circle paintingString(int row, int column) {
-        Circle circle = new Circle(row * 40, column * 40, 13);
-        circle.setFill(Paint.valueOf("Red"));
-        return circle;
+    public static void paintingString(int row, int column) {
+
     }
 
 

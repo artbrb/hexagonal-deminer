@@ -11,16 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-
+import static sample.Hexagon.paintingString;
 
 
 public class Main extends Application {
-    public static List<Pair<Integer,Integer>> movesAround = new ArrayList<>();
+    static List<Pair<Integer,Integer>> movesAround = new ArrayList<>();
     public boolean bangMine;
-    public static int countOpenedHexagons;
+    static int countOpenedHexagons;
     final String FLAG_ICON = "F";
     public static int SIZE_OF_FIELD = 20;
-    public static int numberOfMines = 10;
+    public static int numberOfMines = 60;
     public static int rowCoordinateBang;
     public static int columnCoordinateBang;
     public static Hexagon[][] field = new Hexagon[SIZE_OF_FIELD][SIZE_OF_FIELD];
@@ -28,13 +28,14 @@ public class Main extends Application {
     public static boolean bangAndLoss = false;
     public int countBombs = 0;
     Random random = new Random();
+    static Group root = new Group();
 
 
 
 
     @Override
     public void start(Stage primaryStage) {
-        Group root = new Group();
+
         primaryStage.setTitle("hexagonal deminer");
         Scene scene = new Scene(root, 800, 800);
         primaryStage.setScene(scene);
@@ -43,9 +44,6 @@ public class Main extends Application {
         createField(root);
 
 
-//        Circle circle = new Circle(6 * 40, 6 * 40, 13);
-//        circle.setFill(Paint.valueOf("Red"));
-//        root.getChildren().add(circle);
 
         primaryStage.setResizable(false);
         primaryStage.show();
@@ -61,16 +59,14 @@ public class Main extends Application {
     public void createField(Group root) {
         for (int row = 0; row < SIZE_OF_FIELD; row++) {
             for (int column = 0; column < SIZE_OF_FIELD; column++) {
-
                 Hexagon hexagon = new Hexagon(20, 2);
-                root.getChildren().add(hexagon.createHexagon(row, column, 20, 2));
-                field[row][column] = hexagon;
-                hexagon.rowCoordinate = row;
-                hexagon.columnСoordinate = column;
 
+                field[row][column] = hexagon.createHexagon(row, column, 20, 2);
+                field[row][column].rowCoordinate = row;
+                field[row][column].columnСoordinate = column;
+                root.getChildren().add(field[row][column]);
 
-
-                root.getChildren().add(hexagon);
+//                root.getChildren().add(hexagon);
 
             }
         }
@@ -107,23 +103,35 @@ public class Main extends Application {
 
     }
 
-//    public static Hexagon openHexagons(int row, int column) {
-//        if (field[row][column].isNotOpen() && !bangAndLoss && field[row][column].getCountBomb() == 0)  {
-//
-//            field[row][column].openHexagon();
-//
-//
-//            field[row][column].setFill(Paint.valueOf("#a6a6a6"));
-//            for (Pair<Integer, Integer> move : movesAround) {
-//                if (checkOutOfField(row, column, move)) {
-//
-//
-//                    openHexagons(row + move.getKey(), column + move.getValue());
-//                }
-//            }
-//        }
-//        return null;
-//    }
+    public static void openHexagons(int row, int column) {
+        if (field[row][column].getStatusMined()) {
+
+            field[row][column].setFill(Paint.valueOf("Red"));
+            bangAndLoss = true;
+            restart();
+
+        } else {
+            if (field[row][column].getBombCount() > 0) {
+
+                field[row][column].openHexagon();
+                field[row][column].setFill(Paint.valueOf("#ffff33"));
+                paintingString(row, column);
+
+            } else {
+                if (field[row][column].notOpen() && !field[row][column].isFlag && field[row][column].getBombCount() == 0) {
+
+                    field[row][column].openHexagon();
+                    field[row][column].setFill(Paint.valueOf("#a6a6a6"));
+
+                    for (Pair<Integer, Integer> move : movesAround) {
+                        if (checkOutOfField(row, column, move)) {
+                            openHexagons(row + move.getKey(), column + move.getValue());
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 
 

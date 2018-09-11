@@ -25,15 +25,8 @@ public class Hexagon extends Polygon {
 
 
 
-    Hexagon(int radius, int intermediateDistance) {
-        this.radius = radius;
-        this.intermediateDistance = intermediateDistance;
-
-    }
-
-
     public Hexagon createHexagon(int row, int column, int radius, int intermediateDistance) {
-        Hexagon hexagon = new Hexagon(20, 2);
+        Hexagon hexagon = new Hexagon();
 
         for (int i = 0; i < 6; i++) {
             hexagon.getPoints().add(radius * sin(i * PI / 3));
@@ -41,23 +34,25 @@ public class Hexagon extends Polygon {
         }
 
         double halfHeight = sqrt(3) * radius / 2;
-        columnPixelCoordinate = (column * 2 - row % 2) * halfHeight + column * intermediateDistance + 36;
-        rowPixelCoordinate = row * (intermediateDistance + radius * 1.5) + 36;
-        hexagon.setTranslateX(columnPixelCoordinate);
-        hexagon.setTranslateY(rowPixelCoordinate);
+        hexagon.columnPixelCoordinate = (column * 2 - row % 2) * halfHeight + column * intermediateDistance + 36;
+        hexagon.rowPixelCoordinate = row * (intermediateDistance + radius * 1.5) + 36;
+
+        hexagon.setTranslateX(hexagon.columnPixelCoordinate);
+        hexagon.setTranslateY(hexagon.rowPixelCoordinate);
+
         hexagon.setFill(Paint.valueOf("#666699"));
 
 
         hexagon.setOnMousePressed((MouseEvent event) -> {
             if (!bangAndLoss && !win) {
-                if (event.isPrimaryButtonDown()) {
+                if (event.isPrimaryButtonDown() && !hexagon.getStatusFlag()) {
                     openHexagons(hexagon.rowCoordinate, hexagon.columnСoordinate);
 
                     boolean check = countOpenedHexagons == ((SIZE_OF_FIELD * SIZE_OF_FIELD) - numberOfMines);
                     win = check;
                 }
                 if (event.isSecondaryButtonDown()) {
-                    invertFlag();
+                    invertFlag(hexagon.rowCoordinate, hexagon.columnСoordinate);
                 }
 
                 if (win) {
@@ -68,8 +63,6 @@ public class Hexagon extends Polygon {
 
         return hexagon;
     }
-
-
 
 
     public  void openHexagon() {
@@ -90,8 +83,11 @@ public class Hexagon extends Polygon {
     boolean getStatusMined() {
         return isMine;
     }
+    boolean getStatusFlag() {
+        return isFlag;
+    }
 
-    public void invertFlag() {
+    public void reverseFlag() {
         isFlag = !isFlag;
     }
 

@@ -5,25 +5,22 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static java.lang.Math.PI;
-import static java.lang.StrictMath.cos;
-import static java.lang.StrictMath.sin;
-import static sample.Hexagon.*;
-
 
 public class Main extends Application {
-    static List<Pair<Integer,Integer>> movesAround = new ArrayList<>();
+    static List<Pair<Integer,Integer>> movesAroundForEvenRow = new ArrayList<>();
+    static List<Pair<Integer,Integer>> movesAroundForOddRow = new ArrayList<>();
     public boolean bangMine;
     static int countOpenedHexagons;
-    final String FLAG_ICON = "F";
+    public final String FLAG_ICON = "F";
     public static int SIZE_OF_FIELD = 20;
     public static int numberOfMines = 30;
     public static int rowCoordinateBang;
@@ -37,7 +34,6 @@ public class Main extends Application {
 
 
 
-
     @Override
     public void start(Stage primaryStage) {
 
@@ -47,7 +43,6 @@ public class Main extends Application {
         scene.setFill(Paint.valueOf("#648f6e"));
 
         createField(root);
-
 
 
         primaryStage.setResizable(false);
@@ -64,14 +59,12 @@ public class Main extends Application {
     public void createField(Group root) {
         for (int row = 0; row < SIZE_OF_FIELD; row++) {
             for (int column = 0; column < SIZE_OF_FIELD; column++) {
-                Hexagon hexagon = new Hexagon(20, 2);
+                Hexagon hexagon = new Hexagon();
 
                 field[row][column] = hexagon.createHexagon(row, column, 20, 2);
                 field[row][column].rowCoordinate = row;
                 field[row][column].columnСoordinate = column;
                 root.getChildren().add(field[row][column]);
-
-//                root.getChildren().add(hexagon);
 
             }
         }
@@ -86,28 +79,31 @@ public class Main extends Application {
             field[x][y].setMineStatus();
             countBombs++;
         }
+        hexagonsAroundEven();
+        hexagonsAroundOdd();
 
-
-        hexagonsAround();
         //Обход поля
         for (int row = 0; row < SIZE_OF_FIELD; row++)
             for (int column = 0; column < SIZE_OF_FIELD; column++)
                 //проверка на отсутствие бомбы
-                if (!field[row][column].getStatusMined())
+                if (!field[row][column].getStatusMined()) {
                     //перебор по соседним шестиугольникам
-                    for (Pair<Integer, Integer> move : movesAround)
-                        //проверка на возможность хода
-                        if (checkOutOfField(row, column, move))
-                            //считаем ,если бомба
-                            if (field[row + move.getKey()][column + move.getValue()].getStatusMined())
-                                field[row][column].numbersOfBombsNear++;
-
-
-
-
-
-
-
+                    if (row % 2 == 0) {
+                        for (Pair<Integer, Integer> move : movesAroundForEvenRow)
+                            //проверка на возможность хода
+                            if (checkOutOfField(row, column, move))
+                                //считаем ,если бомба
+                                if (field[row + move.getKey()][column + move.getValue()].getStatusMined())
+                                    field[row][column].numbersOfBombsNear++;
+                    } else {
+                        for (Pair<Integer, Integer> move : movesAroundForOddRow)
+                            //проверка на возможность хода
+                            if (checkOutOfField(row, column, move))
+                                //считаем ,если бомба
+                                if (field[row + move.getKey()][column + move.getValue()].getStatusMined())
+                                    field[row][column].numbersOfBombsNear++;
+                    }
+                }
 
     }
 
@@ -115,8 +111,9 @@ public class Main extends Application {
         if (field[row][column].getStatusMined()) {
             //взрыв
             field[row][column].setFill(Paint.valueOf("#a6a6a6"));
-            paintBomb(root, field[row][column].rowPixelCoordinate, field[row][column].columnPixelCoordinate );
+
             bangAndLoss = true;
+            root.getChildren().add(paintBomb(field[row][column].rowPixelCoordinate, field[row][column].columnPixelCoordinate));
             restart();
 
         } else {  //отрисовка цифры
@@ -124,6 +121,7 @@ public class Main extends Application {
 
                 field[row][column].openHexagon();
                 field[row][column].setFill(Paint.valueOf("#ffff33"));
+                root.getChildren().add(paintString(field[row][column].rowPixelCoordinate + 4, field[row][column].columnPixelCoordinate - 3, field[row][column].getBombCount()));
 
 
             } else {
@@ -134,26 +132,54 @@ public class Main extends Application {
                     field[row][column].openHexagon();
                     field[row][column].setFill(Paint.valueOf("#a6a6a6"));
 
-                    for (Pair<Integer, Integer> move : movesAround) {
+                    if (row % 2 == 0)
+                    for (Pair<Integer, Integer> move : movesAroundForEvenRow) {
                         if (checkOutOfField(row, column, move)) {
                             openHexagons(row + move.getKey(), column + move.getValue());
                         }
+                    } else {
+                        for (Pair<Integer, Integer> move : movesAroundForOddRow) {
+                            if (checkOutOfField(row, column, move)) {
+                                openHexagons(row + move.getKey(), column + move.getValue());
+                            }
+                        }
+
                     }
                 }
             }
         }
     }
 
-
-
-    public static void hexagonsAround() {
-        movesAround.add(new Pair<>(-1, -1));
-        movesAround.add(new Pair<>(-1, 0));
-        movesAround.add(new Pair<>(0, -1));
-        movesAround.add(new Pair<>(0, +1));
-        movesAround.add(new Pair<>(+1, -1));
-        movesAround.add(new Pair<>(+1, 0));
+    public static void invertFlag(int row, int column) {
+        if (!field[row][column].isOpen ) {
+            field[row][column].reverseFlag();
+            if (field[row][column].isFlag) {
+                root.getChildren().add(paintFlag(field[row][column].rowPixelCoordinate, field[row][column].columnPixelCoordinate));
+            } else {
+                root.getChildren().remove(paintFlag(field[row][column].rowPixelCoordinate, field[row][column].columnPixelCoordinate));
+            }
+        }
     }
+
+
+    public static void hexagonsAroundOdd() {
+        movesAroundForOddRow.add(new Pair<>(0, -1));
+        movesAroundForOddRow.add(new Pair<>(-1, 0));
+        movesAroundForOddRow.add(new Pair<>(-1, +1));
+        movesAroundForOddRow.add(new Pair<>(0, +1));
+        movesAroundForOddRow.add(new Pair<>(+1, +1));
+        movesAroundForOddRow.add(new Pair<>(+1, 0));
+    }
+
+    public static void hexagonsAroundEven() {
+        movesAroundForEvenRow.add(new Pair<>(0, -1));
+        movesAroundForEvenRow.add(new Pair<>(-1, -1));
+        movesAroundForEvenRow.add(new Pair<>(-1, 0));
+        movesAroundForEvenRow.add(new Pair<>(0, +1));
+        movesAroundForEvenRow.add(new Pair<>(+1, 0));
+        movesAroundForEvenRow.add(new Pair<>(+1, -1));
+    }
+
 
     public static boolean checkOutOfField(int row, int column, Pair<Integer, Integer> coordinates) {
         int incrementRow = row + coordinates.getKey();
@@ -162,31 +188,33 @@ public class Main extends Application {
                 0 <= incrementColumn && incrementColumn < SIZE_OF_FIELD;
     }
 
-    public static void paintBomb(Group root, double rowPixel, double columnPixel) {
-        Circle circle = new Circle(columnPixel, rowPixel, 15);
-        root.getChildren().addAll(circle);
-        circle.setTranslateX(columnPixel);
+    public static Circle paintBomb(double rowPixel, double columnPixel) {
+        Circle circle = new Circle();
         circle.setTranslateY(rowPixel);
-        circle.setFill(Paint.valueOf("Red"));
+        circle.setTranslateX(columnPixel);
+        circle.setRadius(13);
+        circle.setFill(Paint.valueOf("#000033"));
+        return circle;
     }
 
-    public void paintFlag(Group root, double rowPixel, double columnPixel, int radius) {
-        Hexagon polygon = new Hexagon(20, 2);
 
-        for (int i = 0; i < 6; i++) {
-            polygon.getPoints().add(radius * sin(i * PI / 3));
-        }
-        polygon.setFill(Paint.valueOf("#00cc00"));
-        polygon.setTranslateX(columnPixel);
-        polygon.setTranslateY(rowPixel);
-        root.getChildren().add(polygon);
+    public static Text paintFlag(double rowPixel, double columnPixel) {
+        Text text = new Text();
+        text.setTranslateX(columnPixel);
+        text.setTranslateY(rowPixel);
+        text.setText("F");
+        text.setFill(Paint.valueOf("#ff80bf"));
+        return text;
     }
-
-//    public static void paintString(Graphics g, String str, double columnPixelCoordinate, double rowPixelCoordinate, Color color) {
-//        g.setColor(color);
-////        g.setFont(new Font("", Font.BOLD, BLOCK_SIZE));
-//        g.drawString(str, (int) columnPixelCoordinate, (int) rowPixelCoordinate);
-//    }
+    public static Text paintString(double rowPixel, double columnPixel, int countOfBombs) {
+        Text text = new Text();
+        text.setTranslateX(columnPixel);
+        text.setTranslateY(rowPixel);
+        text.setText(Integer.toString(countOfBombs));
+        text.setFill(Paint.valueOf("#00e64d"));
+        text.setFont(Font.font ("Verdana", 20));
+        return text;
+    }
 
     public static void restart() {
 

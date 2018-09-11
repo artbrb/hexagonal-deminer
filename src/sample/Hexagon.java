@@ -16,6 +16,8 @@ public class Hexagon extends Polygon {
     public boolean isMine = false;
     public boolean isFlag = false;
     public int numbersOfBombsNear = 0;
+    public double rowPixelCoordinate;
+    public double columnPixelCoordinate;
     private int intermediateDistance;
     private int radius;
     public int columnСoordinate;
@@ -39,8 +41,10 @@ public class Hexagon extends Polygon {
         }
 
         double halfHeight = sqrt(3) * radius / 2;
-        hexagon.setTranslateX((column * 2 - row % 2) * halfHeight + column * intermediateDistance + 36);
-        hexagon.setTranslateY(row * (intermediateDistance + radius * 1.5) + 36);
+        columnPixelCoordinate = (column * 2 - row % 2) * halfHeight + column * intermediateDistance + 36;
+        rowPixelCoordinate = row * (intermediateDistance + radius * 1.5) + 36;
+        hexagon.setTranslateX(columnPixelCoordinate);
+        hexagon.setTranslateY(rowPixelCoordinate);
         hexagon.setFill(Paint.valueOf("#666699"));
 
 

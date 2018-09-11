@@ -4,14 +4,19 @@ import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static sample.Hexagon.paintingString;
+import static java.lang.Math.PI;
+import static java.lang.StrictMath.cos;
+import static java.lang.StrictMath.sin;
+import static sample.Hexagon.*;
 
 
 public class Main extends Application {
@@ -20,7 +25,7 @@ public class Main extends Application {
     static int countOpenedHexagons;
     final String FLAG_ICON = "F";
     public static int SIZE_OF_FIELD = 20;
-    public static int numberOfMines = 60;
+    public static int numberOfMines = 30;
     public static int rowCoordinateBang;
     public static int columnCoordinateBang;
     public static Hexagon[][] field = new Hexagon[SIZE_OF_FIELD][SIZE_OF_FIELD];
@@ -101,24 +106,30 @@ public class Main extends Application {
 
 
 
+
+
+
     }
 
     public static void openHexagons(int row, int column) {
         if (field[row][column].getStatusMined()) {
-
-            field[row][column].setFill(Paint.valueOf("Red"));
+            //взрыв
+            field[row][column].setFill(Paint.valueOf("#a6a6a6"));
+            paintBomb(root, field[row][column].rowPixelCoordinate, field[row][column].columnPixelCoordinate );
             bangAndLoss = true;
             restart();
 
-        } else {
+        } else {  //отрисовка цифры
             if (field[row][column].getBombCount() > 0) {
 
                 field[row][column].openHexagon();
                 field[row][column].setFill(Paint.valueOf("#ffff33"));
-                paintingString(row, column);
+
 
             } else {
-                if (field[row][column].notOpen() && !field[row][column].isFlag && field[row][column].getBombCount() == 0) {
+                //просто открытие
+                if (field[row][column].notOpen() && !field[row][column].isFlag
+                        && field[row][column].getBombCount() == 0) {
 
                     field[row][column].openHexagon();
                     field[row][column].setFill(Paint.valueOf("#a6a6a6"));
@@ -150,6 +161,32 @@ public class Main extends Application {
         return 0 <= incrementRow && incrementRow < SIZE_OF_FIELD &&
                 0 <= incrementColumn && incrementColumn < SIZE_OF_FIELD;
     }
+
+    public static void paintBomb(Group root, double rowPixel, double columnPixel) {
+        Circle circle = new Circle(columnPixel, rowPixel, 15);
+        root.getChildren().addAll(circle);
+        circle.setTranslateX(columnPixel);
+        circle.setTranslateY(rowPixel);
+        circle.setFill(Paint.valueOf("Red"));
+    }
+
+    public void paintFlag(Group root, double rowPixel, double columnPixel, int radius) {
+        Hexagon polygon = new Hexagon(20, 2);
+
+        for (int i = 0; i < 6; i++) {
+            polygon.getPoints().add(radius * sin(i * PI / 3));
+        }
+        polygon.setFill(Paint.valueOf("#00cc00"));
+        polygon.setTranslateX(columnPixel);
+        polygon.setTranslateY(rowPixel);
+        root.getChildren().add(polygon);
+    }
+
+//    public static void paintString(Graphics g, String str, double columnPixelCoordinate, double rowPixelCoordinate, Color color) {
+//        g.setColor(color);
+////        g.setFont(new Font("", Font.BOLD, BLOCK_SIZE));
+//        g.drawString(str, (int) columnPixelCoordinate, (int) rowPixelCoordinate);
+//    }
 
     public static void restart() {
 

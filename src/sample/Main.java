@@ -3,6 +3,8 @@ package sample;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
@@ -12,6 +14,7 @@ import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 
@@ -26,6 +29,7 @@ public class Main extends Application {
     public static int rowCoordinateBang;
     public static int columnCoordinateBang;
     public static Hexagon[][] field = new Hexagon[SIZE_OF_FIELD][SIZE_OF_FIELD];
+    public static Text[][] Flagfield = new Text[SIZE_OF_FIELD][SIZE_OF_FIELD];
     public static boolean win = false;
     public static boolean bangAndLoss = false;
     public int countBombs = 0;
@@ -79,6 +83,7 @@ public class Main extends Application {
             field[x][y].setMineStatus();
             countBombs++;
         }
+
         hexagonsAroundEven();
         hexagonsAroundOdd();
 
@@ -114,14 +119,14 @@ public class Main extends Application {
 
             bangAndLoss = true;
             root.getChildren().add(paintBomb(field[row][column].rowPixelCoordinate, field[row][column].columnPixelCoordinate));
-            restart();
+            endOfGame("The game is lost!");
 
         } else {  //отрисовка цифры
             if (field[row][column].getBombCount() > 0) {
 
                 field[row][column].openHexagon();
                 field[row][column].setFill(Paint.valueOf("#ffff33"));
-                root.getChildren().add(paintString(field[row][column].rowPixelCoordinate + 4, field[row][column].columnPixelCoordinate - 3, field[row][column].getBombCount()));
+                root.getChildren().add(paintString(field[row][column].rowPixelCoordinate + 10, field[row][column].columnPixelCoordinate - 8, field[row][column].getBombCount()));
 
 
             } else {
@@ -151,33 +156,34 @@ public class Main extends Application {
     }
 
     public static void invertFlag(int row, int column) {
-        if (!field[row][column].isOpen ) {
+        if (!field[row][column].isOpen) {
             field[row][column].reverseFlag();
             if (field[row][column].isFlag) {
-                root.getChildren().add(paintFlag(field[row][column].rowPixelCoordinate, field[row][column].columnPixelCoordinate));
+                Flagfield[row][column] = paintFlag(field[row][column].rowPixelCoordinate, field[row][column].columnPixelCoordinate);
+                root.getChildren().add(Flagfield[row][column]);
             } else {
-                root.getChildren().remove(paintFlag(field[row][column].rowPixelCoordinate, field[row][column].columnPixelCoordinate));
+                root.getChildren().remove(Flagfield[row][column]);
             }
         }
     }
 
 
-    public static void hexagonsAroundOdd() {
-        movesAroundForOddRow.add(new Pair<>(0, -1));
-        movesAroundForOddRow.add(new Pair<>(-1, 0));
-        movesAroundForOddRow.add(new Pair<>(-1, +1));
-        movesAroundForOddRow.add(new Pair<>(0, +1));
-        movesAroundForOddRow.add(new Pair<>(+1, +1));
-        movesAroundForOddRow.add(new Pair<>(+1, 0));
-    }
-
     public static void hexagonsAroundEven() {
         movesAroundForEvenRow.add(new Pair<>(0, -1));
-        movesAroundForEvenRow.add(new Pair<>(-1, -1));
         movesAroundForEvenRow.add(new Pair<>(-1, 0));
+        movesAroundForEvenRow.add(new Pair<>(-1, +1));
         movesAroundForEvenRow.add(new Pair<>(0, +1));
+        movesAroundForEvenRow.add(new Pair<>(+1, +1));
         movesAroundForEvenRow.add(new Pair<>(+1, 0));
-        movesAroundForEvenRow.add(new Pair<>(+1, -1));
+    }
+
+    public static void hexagonsAroundOdd() {
+        movesAroundForOddRow.add(new Pair<>(0, -1));
+        movesAroundForOddRow.add(new Pair<>(-1, -1));
+        movesAroundForOddRow.add(new Pair<>(-1, 0));
+        movesAroundForOddRow.add(new Pair<>(0, +1));
+        movesAroundForOddRow.add(new Pair<>(+1, 0));
+        movesAroundForOddRow.add(new Pair<>(+1, -1));
     }
 
 
@@ -212,12 +218,19 @@ public class Main extends Application {
         text.setTranslateY(rowPixel);
         text.setText(Integer.toString(countOfBombs));
         text.setFill(Paint.valueOf("#00e64d"));
-        text.setFont(Font.font ("Verdana", 20));
+        text.setFont(Font.font ("Verdana", 30));
+
         return text;
     }
 
-    public static void restart() {
-
+    public static void endOfGame(String string) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(string);
+        alert.setTitle("End of Game");
+        Optional<ButtonType> actions = alert.showAndWait();
+        if (actions.get() == ButtonType.OK) {
+            alert.close();
+        }
     }
 
 }

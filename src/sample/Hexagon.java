@@ -2,7 +2,6 @@ package sample;
 
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 
 import static java.lang.Math.PI;
@@ -56,7 +55,7 @@ public class Hexagon extends Polygon {
                 }
 
                 if (win) {
-                    restart();
+                    endOfGame("The game is won!");
                 }
             }
         });

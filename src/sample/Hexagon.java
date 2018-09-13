@@ -14,7 +14,7 @@ public class Hexagon extends Polygon {
     public boolean isOpen = false;
     public boolean isMine = false;
     public boolean isFlag = false;
-    public int numbersOfBombsNear = 0;
+    public int numbersOfBombsNear;
     public double rowPixelCoordinate;
     public double columnPixelCoordinate;
     private int intermediateDistance;
@@ -63,7 +63,7 @@ public class Hexagon extends Polygon {
             }
 
             if (win) {
-                endOfGame("The game is won!");
+                endAndRestart("The game is won!");
             }
 
         });

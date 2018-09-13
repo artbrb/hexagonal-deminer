@@ -19,24 +19,23 @@ import java.util.Random;
 
 
 public class Main extends Application {
-    static List<Pair<Integer,Integer>> movesAroundForEvenRow = new ArrayList<>();
-    static List<Pair<Integer,Integer>> movesAroundForOddRow = new ArrayList<>();
+    static List<Pair<Integer, Integer>> movesAroundForEvenRow = new ArrayList<>();
+    static List<Pair<Integer, Integer>> movesAroundForOddRow = new ArrayList<>();
     public boolean bangMine;
     static int countOpenedHexagons = 0;
     public final String FLAG_ICON = "F";
-    public static int SIZE_OF_FIELD = 10;
-    public static int numberOfMines = 5;
+    static int SIZE_OF_FIELD = 20;
+    static int numberOfMines = 20;
     public static int rowCoordinateBang;
     public static int columnCoordinateBang;
-    public static int flaggedBomb;
-    public static Hexagon[][] field = new Hexagon[SIZE_OF_FIELD][SIZE_OF_FIELD];
-    public static Text[][] flagField = new Text[SIZE_OF_FIELD][SIZE_OF_FIELD];
-    public static boolean win;
-    public static boolean bangAndLoss = false;
-    public static int countBombs = 0;
+    static int flaggedBomb;
+    private static Hexagon[][] field = new Hexagon[SIZE_OF_FIELD][SIZE_OF_FIELD];
+    private static Text[][] flagField = new Text[SIZE_OF_FIELD][SIZE_OF_FIELD];
+    static boolean win;
+    static boolean bangAndLoss = false;
+    private static int countBombs = 0;
     private static Random random = new Random();
     private static Group root = new Group();
-
 
 
     @Override
@@ -76,8 +75,8 @@ public class Main extends Application {
             int x;
             int y;
             do {
-                 x = random.nextInt(SIZE_OF_FIELD);
-                 y = random.nextInt(SIZE_OF_FIELD);
+                x = random.nextInt(SIZE_OF_FIELD);
+                y = random.nextInt(SIZE_OF_FIELD);
             } while (field[x][y].getStatusMined());
             field[x][y].setMineStatus();
             countBombs++;
@@ -119,7 +118,7 @@ public class Main extends Application {
             root.getChildren().add(paintBomb(field[row][column].rowPixelCoordinate,
                     field[row][column].columnPixelCoordinate));
 
-            endOfGame("The game is lost!");
+            endAndRestart("The game is lost!");
 
         } else {  //отрисовка цифры
             if (field[row][column].getBombCount() > 0 && field[row][column].notOpen()) {
@@ -165,7 +164,7 @@ public class Main extends Application {
                 root.getChildren().add(flagField[row][column]);
             } else {
                 if (field[row][column].getStatusMined())
-                flaggedBomb = flaggedBomb - 1;
+                    flaggedBomb = flaggedBomb - 1;
                 root.getChildren().remove(flagField[row][column]);
             }
         }
@@ -174,7 +173,7 @@ public class Main extends Application {
                 (countOpenedHexagons == ((SIZE_OF_FIELD * SIZE_OF_FIELD) - numberOfMines));
 
         if (win) {
-            endOfGame("The game is won!");
+            endAndRestart("The game is won!");
         }
     }
 
@@ -223,32 +222,19 @@ public class Main extends Application {
         text.setFill(Paint.valueOf("#ff80bf"));
         return text;
     }
+
     public static Text paintString(double rowPixel, double columnPixel, int countOfBombs) {
         Text text = new Text();
         text.setTranslateX(columnPixel);
         text.setTranslateY(rowPixel);
         text.setText(Integer.toString(countOfBombs));
         text.setFill(Paint.valueOf("#00e64d"));
-        text.setFont(Font.font ("Verdana", 30));
+        text.setFont(Font.font("Verdana", 30));
 
         return text;
     }
 
-//    public static boolean checkWin() {
-//        boolean firstCondition;
-//        int counter = 0;
-//        for (int row = 0; row < SIZE_OF_FIELD; row++) {
-//            for (int column = 0; column < SIZE_OF_FIELD; column++) {
-//                if (field[row][column].getStatusMined() && field[row][column].getStatusFlag()) {
-//                    counter++;
-//                }
-//            }
-//            }
-//            return (countOpenedHexagons == ((SIZE_OF_FIELD * SIZE_OF_FIELD) - numberOfMines))
-//                    && counter == numberOfMines
-//    }
-
-    public static void endOfGame(String string) {
+    public static void endAndRestart(String string) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setHeaderText(string);
         alert.setTitle("End of Game");
@@ -256,16 +242,21 @@ public class Main extends Application {
         if (actions.get() == ButtonType.OK) {
             field = new Hexagon[SIZE_OF_FIELD][SIZE_OF_FIELD];
             flagField = new Text[SIZE_OF_FIELD][SIZE_OF_FIELD];
+
             root.getChildren().clear();
             flaggedBomb = 0;
             countOpenedHexagons = 0;
             countBombs = 0;
-
+            win = false;
+            bangAndLoss = false;
 
             createField(root);
 
-
-
+//            for (int row = 0; row < SIZE_OF_FIELD; row++) {
+//                for (int column = 0; column < SIZE_OF_FIELD; column++) {
+//                    field[row][column].numbersOfBombsNear = field[row][column].numbersOfBombsNear - 1;
+//                }
+//            }
             alert.close();
         }
     }

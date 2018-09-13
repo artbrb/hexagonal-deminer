@@ -25,7 +25,7 @@ public class Main extends Application {
     static int countOpenedHexagons = 0;
     public final String FLAG_ICON = "F";
     static int SIZE_OF_FIELD = 20;
-    static int numberOfMines = 20;
+    static int numberOfMines = 40;
     public static int rowCoordinateBang;
     public static int columnCoordinateBang;
     static int flaggedBomb;
@@ -246,10 +246,12 @@ public class Main extends Application {
         alert.setTitle("End of Game");
         Optional<ButtonType> actions = alert.showAndWait();
         if (actions.get() == ButtonType.OK) {
-            field = new Hexagon[SIZE_OF_FIELD][SIZE_OF_FIELD];
+//            field = new Hexagon[SIZE_OF_FIELD][SIZE_OF_FIELD];
             flagField = new Text[SIZE_OF_FIELD][SIZE_OF_FIELD];
-
             root.getChildren().clear();
+            movesAroundForEvenRow.clear();
+            movesAroundForOddRow.clear();
+
             flaggedBomb = 0;
             countOpenedHexagons = 0;
             countBombs = 0;

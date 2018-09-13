@@ -22,19 +22,20 @@ public class Main extends Application {
     static List<Pair<Integer,Integer>> movesAroundForEvenRow = new ArrayList<>();
     static List<Pair<Integer,Integer>> movesAroundForOddRow = new ArrayList<>();
     public boolean bangMine;
-    static int countOpenedHexagons;
+    static int countOpenedHexagons = 0;
     public final String FLAG_ICON = "F";
-    public static int SIZE_OF_FIELD = 20;
-    public static int numberOfMines = 30;
+    public static int SIZE_OF_FIELD = 10;
+    public static int numberOfMines = 5;
     public static int rowCoordinateBang;
     public static int columnCoordinateBang;
+    public static int flaggedBomb;
     public static Hexagon[][] field = new Hexagon[SIZE_OF_FIELD][SIZE_OF_FIELD];
-    public static Text[][] Flagfield = new Text[SIZE_OF_FIELD][SIZE_OF_FIELD];
-    public static boolean win = false;
+    public static Text[][] flagField = new Text[SIZE_OF_FIELD][SIZE_OF_FIELD];
+    public static boolean win;
     public static boolean bangAndLoss = false;
-    public int countBombs = 0;
-    Random random = new Random();
-    static Group root = new Group();
+    public static int countBombs = 0;
+    private static Random random = new Random();
+    private static Group root = new Group();
 
 
 
@@ -48,10 +49,8 @@ public class Main extends Application {
 
         createField(root);
 
-
         primaryStage.setResizable(false);
         primaryStage.show();
-
 
     }
 
@@ -60,12 +59,12 @@ public class Main extends Application {
         launch(args);
     }
 
-    public void createField(Group root) {
+    public static void createField(Group root) {
         for (int row = 0; row < SIZE_OF_FIELD; row++) {
             for (int column = 0; column < SIZE_OF_FIELD; column++) {
                 Hexagon hexagon = new Hexagon();
 
-                field[row][column] = hexagon.createHexagon(row, column, 20, 2);
+                field[row][column] = hexagon.createHexagon(row, column, 20, 5);
                 field[row][column].rowCoordinate = row;
                 field[row][column].columnСoordinate = column;
                 root.getChildren().add(field[row][column]);
@@ -115,19 +114,20 @@ public class Main extends Application {
     public static void openHexagons(int row, int column) {
         if (field[row][column].getStatusMined()) {
             //взрыв
-            field[row][column].setFill(Paint.valueOf("#a6a6a6"));
-
+            field[row][column].setFill(Paint.valueOf("Red"));
             bangAndLoss = true;
-            root.getChildren().add(paintBomb(field[row][column].rowPixelCoordinate, field[row][column].columnPixelCoordinate));
+            root.getChildren().add(paintBomb(field[row][column].rowPixelCoordinate,
+                    field[row][column].columnPixelCoordinate));
+
             endOfGame("The game is lost!");
 
         } else {  //отрисовка цифры
-            if (field[row][column].getBombCount() > 0) {
+            if (field[row][column].getBombCount() > 0 && field[row][column].notOpen()) {
 
                 field[row][column].openHexagon();
                 field[row][column].setFill(Paint.valueOf("#ffff33"));
-                root.getChildren().add(paintString(field[row][column].rowPixelCoordinate + 10, field[row][column].columnPixelCoordinate - 8, field[row][column].getBombCount()));
-
+                root.getChildren().add(paintString(field[row][column].rowPixelCoordinate + 10,
+                        field[row][column].columnPixelCoordinate - 8, field[row][column].getBombCount()));
 
             } else {
                 //просто открытие
@@ -135,12 +135,14 @@ public class Main extends Application {
                         && field[row][column].getBombCount() == 0) {
 
                     field[row][column].openHexagon();
+//                    field[row][column].setFill(Paint.valueOf("#66c2ff"));
                     field[row][column].setFill(Paint.valueOf("#a6a6a6"));
 
-                    if (row % 2 == 0)
-                    for (Pair<Integer, Integer> move : movesAroundForEvenRow) {
-                        if (checkOutOfField(row, column, move)) {
-                            openHexagons(row + move.getKey(), column + move.getValue());
+                    if (row % 2 == 0) {
+                        for (Pair<Integer, Integer> move : movesAroundForEvenRow) {
+                            if (checkOutOfField(row, column, move)) {
+                                openHexagons(row + move.getKey(), column + move.getValue());
+                            }
                         }
                     } else {
                         for (Pair<Integer, Integer> move : movesAroundForOddRow) {
@@ -148,7 +150,6 @@ public class Main extends Application {
                                 openHexagons(row + move.getKey(), column + move.getValue());
                             }
                         }
-
                     }
                 }
             }
@@ -159,11 +160,21 @@ public class Main extends Application {
         if (!field[row][column].isOpen) {
             field[row][column].reverseFlag();
             if (field[row][column].isFlag) {
-                Flagfield[row][column] = paintFlag(field[row][column].rowPixelCoordinate, field[row][column].columnPixelCoordinate);
-                root.getChildren().add(Flagfield[row][column]);
+                if (field[row][column].getStatusMined()) flaggedBomb++;
+                flagField[row][column] = paintFlag(field[row][column].rowPixelCoordinate, field[row][column].columnPixelCoordinate);
+                root.getChildren().add(flagField[row][column]);
             } else {
-                root.getChildren().remove(Flagfield[row][column]);
+                if (field[row][column].getStatusMined())
+                flaggedBomb = flaggedBomb - 1;
+                root.getChildren().remove(flagField[row][column]);
             }
+        }
+
+        win = (flaggedBomb == numberOfMines) &&
+                (countOpenedHexagons == ((SIZE_OF_FIELD * SIZE_OF_FIELD) - numberOfMines));
+
+        if (win) {
+            endOfGame("The game is won!");
         }
     }
 
@@ -223,12 +234,38 @@ public class Main extends Application {
         return text;
     }
 
+//    public static boolean checkWin() {
+//        boolean firstCondition;
+//        int counter = 0;
+//        for (int row = 0; row < SIZE_OF_FIELD; row++) {
+//            for (int column = 0; column < SIZE_OF_FIELD; column++) {
+//                if (field[row][column].getStatusMined() && field[row][column].getStatusFlag()) {
+//                    counter++;
+//                }
+//            }
+//            }
+//            return (countOpenedHexagons == ((SIZE_OF_FIELD * SIZE_OF_FIELD) - numberOfMines))
+//                    && counter == numberOfMines
+//    }
+
     public static void endOfGame(String string) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setHeaderText(string);
         alert.setTitle("End of Game");
         Optional<ButtonType> actions = alert.showAndWait();
         if (actions.get() == ButtonType.OK) {
+            field = new Hexagon[SIZE_OF_FIELD][SIZE_OF_FIELD];
+            flagField = new Text[SIZE_OF_FIELD][SIZE_OF_FIELD];
+            root.getChildren().clear();
+            flaggedBomb = 0;
+            countOpenedHexagons = 0;
+            countBombs = 0;
+
+
+            createField(root);
+
+
+
             alert.close();
         }
     }

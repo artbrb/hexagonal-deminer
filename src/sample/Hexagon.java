@@ -42,22 +42,30 @@ public class Hexagon extends Polygon {
         hexagon.setFill(Paint.valueOf("#666699"));
 
 
+
         hexagon.setOnMousePressed((MouseEvent event) -> {
             if (!bangAndLoss && !win) {
                 if (event.isPrimaryButtonDown() && !hexagon.getStatusFlag()) {
                     openHexagons(hexagon.rowCoordinate, hexagon.columnСoordinate);
 
-                    boolean check = countOpenedHexagons == ((SIZE_OF_FIELD * SIZE_OF_FIELD) - numberOfMines);
-                    win = check;
+
+                    boolean flagger = flaggedBomb == numberOfMines;
+                    boolean size = flaggedBomb == numberOfMines;
+                    win = (flaggedBomb == numberOfMines) &&
+                            (countOpenedHexagons == ((SIZE_OF_FIELD * SIZE_OF_FIELD) - numberOfMines));
+
                 }
                 if (event.isSecondaryButtonDown()) {
                     invertFlag(hexagon.rowCoordinate, hexagon.columnСoordinate);
                 }
 
-                if (win) {
-                    endOfGame("The game is won!");
-                }
+
             }
+
+            if (win) {
+                endOfGame("The game is won!");
+            }
+
         });
 
         return hexagon;
@@ -68,7 +76,6 @@ public class Hexagon extends Polygon {
         if (!isMine) countOpenedHexagons++;
         bangAndLoss = isMine;
         isOpen = true;
-
     }
 
     boolean notOpen() {
@@ -93,15 +100,4 @@ public class Hexagon extends Polygon {
     int getBombCount() {
         return numbersOfBombsNear;
     }
-
-    void paintingBomb() {
-
-    }
-
-
-    public static void paintingString(int row, int column) {
-
-    }
-
-
 }

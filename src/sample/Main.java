@@ -19,8 +19,8 @@ import java.util.Random;
 
 
 public class Main extends Application {
-    static List<Pair<Integer, Integer>> movesAroundForEvenRow = new ArrayList<>();
-    static List<Pair<Integer, Integer>> movesAroundForOddRow = new ArrayList<>();
+    private static List<Pair<Integer, Integer>> movesAroundForEvenRow = new ArrayList<>();
+    private static List<Pair<Integer, Integer>> movesAroundForOddRow = new ArrayList<>();
     public boolean bangMine;
     static int countOpenedHexagons = 0;
     public final String FLAG_ICON = "F";
@@ -113,11 +113,17 @@ public class Main extends Application {
     public static void openHexagons(int row, int column) {
         if (field[row][column].getStatusMined()) {
             //взрыв
-            field[row][column].setFill(Paint.valueOf("Red"));
             bangAndLoss = true;
-            root.getChildren().add(paintBomb(field[row][column].rowPixelCoordinate,
-                    field[row][column].columnPixelCoordinate));
+            for (int r = 0; r < SIZE_OF_FIELD; r++)
+                for (int c = 0; c < SIZE_OF_FIELD; c++) {
+                    if (field[r][c].getStatusMined()) {
+                        root.getChildren().add(paintBomb(field[r][c].rowPixelCoordinate,
+                                field[r][c].columnPixelCoordinate));
+                        field[r][c].setFill(Paint.valueOf("#666699"));
+                    }
+                }
 
+            field[row][column].setFill(Paint.valueOf("Red"));
             endAndRestart("The game is lost!");
 
         } else {  //отрисовка цифры
@@ -251,12 +257,6 @@ public class Main extends Application {
             bangAndLoss = false;
 
             createField(root);
-
-//            for (int row = 0; row < SIZE_OF_FIELD; row++) {
-//                for (int column = 0; column < SIZE_OF_FIELD; column++) {
-//                    field[row][column].numbersOfBombsNear = field[row][column].numbersOfBombsNear - 1;
-//                }
-//            }
             alert.close();
         }
     }

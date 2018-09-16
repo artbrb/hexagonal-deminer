@@ -15,8 +15,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -69,7 +67,7 @@ public class Main extends Application {
         root.getChildren().addAll(box);
         buttons();
 
-        primaryStage.setTitle("hexagonal minesweeper");
+        primaryStage.setTitle("hexagonal deminer");
         Scene scene = new Scene(root, 900, 850);
         primaryStage.setScene(scene);
         scene.setFill(Paint.valueOf("#648f6e"));
@@ -98,7 +96,7 @@ public class Main extends Application {
             do {
                 x = random.nextInt(SIZE_OF_FIELD);
                 y = random.nextInt(SIZE_OF_FIELD);
-            } while (field[x][y].getStatusMined());
+            } while (field[x][y].getMinedStatus());
             if (x != firstClickRow && y != firstClickColumn) {
                 field[x][y].setMineStatus();
                 countBombs++;
@@ -112,21 +110,21 @@ public class Main extends Application {
         for (int row = 0; row < SIZE_OF_FIELD; row++)
             for (int column = 0; column < SIZE_OF_FIELD; column++)
                 //проверка на отсутствие бомбы
-                if (!field[row][column].getStatusMined()) {
+                if (!field[row][column].getMinedStatus()) {
                     //перебор по соседним шестиугольникам
                     if (row % 2 == 0) {
                         for (Pair<Integer, Integer> move : movesAroundForEvenRow)
                             //проверка на возможность хода
                             if (checkOutOfField(row, column, move))
                                 //считаем ,если бомба
-                                if (field[row + move.getKey()][column + move.getValue()].getStatusMined())
+                                if (field[row + move.getKey()][column + move.getValue()].getMinedStatus())
                                     field[row][column].numbersOfBombsNear++;
                     } else {
                         for (Pair<Integer, Integer> move : movesAroundForOddRow)
                             //проверка на возможность хода
                             if (checkOutOfField(row, column, move))
                                 //считаем ,если бомба
-                                if (field[row + move.getKey()][column + move.getValue()].getStatusMined())
+                                if (field[row + move.getKey()][column + move.getValue()].getMinedStatus())
                                     field[row][column].numbersOfBombsNear++;
                     }
                 }
@@ -134,12 +132,12 @@ public class Main extends Application {
     }
 
     static void openHexagons(int row, int column) {
-        if (field[row][column].getStatusMined()) {
+        if (field[row][column].getMinedStatus()) {
             //взрыв
             bangAndLoss = true;
             for (int r = 0; r < SIZE_OF_FIELD; r++)
                 for (int c = 0; c < SIZE_OF_FIELD; c++) {
-                    if (field[r][c].getStatusMined()) {
+                    if (field[r][c].getMinedStatus()) {
                         field[r][c].setFill(Paint.valueOf("#666699"));
                         root.getChildren().add(paintBomb(field[r][c].rowPixelCoordinate,
                                 field[r][c].columnPixelCoordinate));
@@ -165,14 +163,14 @@ public class Main extends Application {
                     if (row % 2 == 0) {
                         for (Pair<Integer, Integer> move : movesAroundForEvenRow) {
                             if (checkOutOfField(row, column, move) &&
-                                    !field[row + move.getKey()][column + move.getValue()].getStatusFlag()) {
+                                    !field[row + move.getKey()][column + move.getValue()].getFlagStatus()) {
                                 openHexagons(row + move.getKey(), column + move.getValue());
                             }
                         }
                     } else {
                         for (Pair<Integer, Integer> move : movesAroundForOddRow) {
                             if (checkOutOfField(row, column, move) &&
-                                    !field[row + move.getKey()][column + move.getValue()].getStatusFlag()) {
+                                    !field[row + move.getKey()][column + move.getValue()].getFlagStatus()) {
                                 openHexagons(row + move.getKey(), column + move.getValue());
                             }
                         }
@@ -186,12 +184,12 @@ public class Main extends Application {
         if (!field[row][column].isOpen) {
             field[row][column].reverseFlag();
             if (field[row][column].isFlag) {
-                if (field[row][column].getStatusMined()) flaggedBomb++;
+                if (field[row][column].getMinedStatus()) flaggedBomb++;
                 flagField[row][column] = paintFlag(field[row][column].rowPixelCoordinate + 7,
                         field[row][column].columnPixelCoordinate - 5);
                 root.getChildren().add(flagField[row][column]);
             } else {
-                if (field[row][column].getStatusMined())
+                if (field[row][column].getMinedStatus())
                     flaggedBomb = flaggedBomb - 1;
                 root.getChildren().remove(flagField[row][column]);
             }

@@ -34,7 +34,7 @@ public class Hexagon extends Polygon {
 
         hexagon.setOnMousePressed((MouseEvent event) -> {
             if (!bangAndLoss && !win) {
-                if (event.isPrimaryButtonDown() && !hexagon.getStatusFlag()) {
+                if (event.isPrimaryButtonDown() && !hexagon.getFlagStatus()) {
                     firstClickAlert++;
                     if (firstClickAlert == 1) {
                         firstClickRow = row;
@@ -73,10 +73,10 @@ public class Hexagon extends Polygon {
         isMine = true;
     }
 
-    boolean getStatusMined() {
+    boolean getMinedStatus() {
         return isMine;
     }
-    boolean getStatusFlag() {
+    boolean getFlagStatus() {
         return isFlag;
     }
 

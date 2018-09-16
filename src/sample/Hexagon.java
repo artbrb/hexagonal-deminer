@@ -35,6 +35,13 @@ public class Hexagon extends Polygon {
         hexagon.setOnMousePressed((MouseEvent event) -> {
             if (!bangAndLoss && !win) {
                 if (event.isPrimaryButtonDown() && !hexagon.getStatusFlag()) {
+                    firstClickAlert++;
+                    if (firstClickAlert == 1) {
+                        firstClickRow = row;
+                        firstClickColumn = column;
+                        placementAndCountingBombs(firstClickRow, firstClickColumn);
+                    }
+
                     openHexagons(hexagon.rowCoordinate, hexagon.columnСoordinate);
                     win = (flaggedBomb == NUMBER_OF_MINES) &&
                             (countOpenedHexagons == ((SIZE_OF_FIELD * SIZE_OF_FIELD) - NUMBER_OF_MINES));

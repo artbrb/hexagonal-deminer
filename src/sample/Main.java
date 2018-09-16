@@ -24,7 +24,9 @@ import java.util.Random;
 
 
 public class Main extends Application {
-
+    static int firstClickAlert = 0;
+    static int firstClickRow = 0;
+    static int firstClickColumn = 0;
     static int countOpenedHexagons = 0;
     private final static String FLAG_ICON = "F";
     static int SIZE_OF_FIELD = 24;
@@ -67,7 +69,7 @@ public class Main extends Application {
         root.getChildren().addAll(box);
         buttons();
 
-        primaryStage.setTitle("hexagonal deminer");
+        primaryStage.setTitle("hexagonal minesweeper");
         Scene scene = new Scene(root, 900, 850);
         primaryStage.setScene(scene);
         scene.setFill(Paint.valueOf("#648f6e"));
@@ -77,6 +79,7 @@ public class Main extends Application {
     }
 
     private static void createField(Group root) {
+
         for (int row = 0; row < SIZE_OF_FIELD; row++) {
             for (int column = 0; column < SIZE_OF_FIELD; column++) {
                 Hexagon hexagon = new Hexagon();
@@ -86,6 +89,9 @@ public class Main extends Application {
                 root.getChildren().add(field[row][column]);
             }
         }
+    }
+    static void placementAndCountingBombs(int firstClickRow, int firstClickColumn) {
+
         while (countBombs < NUMBER_OF_MINES) {
             int x;
             int y;
@@ -93,8 +99,10 @@ public class Main extends Application {
                 x = random.nextInt(SIZE_OF_FIELD);
                 y = random.nextInt(SIZE_OF_FIELD);
             } while (field[x][y].getStatusMined());
-            field[x][y].setMineStatus();
-            countBombs++;
+            if (x != firstClickRow && y != firstClickColumn) {
+                field[x][y].setMineStatus();
+                countBombs++;
+            }
         }
 
         hexagonsAroundEven();
@@ -274,6 +282,7 @@ public class Main extends Application {
             countBombs = 0;
             win = false;
             bangAndLoss = false;
+            firstClickAlert = 0;
 
             root.getChildren().addAll(box);
             createField(root);

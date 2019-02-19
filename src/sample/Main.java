@@ -37,9 +37,9 @@ public class Main extends Application {
     static boolean bangAndLoss = false;
     private static int countBombs = 0;
 
-    private static List<Pair<Integer, Integer>> movesAroundForEvenRow = new ArrayList<>();
-    private static List<Pair<Integer, Integer>> movesAroundForOddRow = new ArrayList<>();
-    private static Hexagon[][] field = new Hexagon[SIZE_OF_FIELD][SIZE_OF_FIELD];
+    static List<Pair<Integer, Integer>> movesAroundForEvenRow = new ArrayList<>();
+    static List<Pair<Integer, Integer>> movesAroundForOddRow = new ArrayList<>();
+     static Hexagon[][] field = new Hexagon[SIZE_OF_FIELD][SIZE_OF_FIELD];
     private static Text[][] flagField = new Text[SIZE_OF_FIELD][SIZE_OF_FIELD];
     private final static String[] COLOR_OF_NUMBERS = {"#0000ff", "#009900", "#801a00", "#944dff", "#ff00ff", "#ff751a"};
 
@@ -50,6 +50,7 @@ public class Main extends Application {
     private static Button easyButton = new Button("Easy");
     private static Button normalButton = new Button("Normal");
     private static Button hardButton = new Button("Hard");
+    private static Button botCall = new Button("Bot, please HELP ME");
 
 
     public static void main(String[] args) {
@@ -59,12 +60,13 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        box.getChildren().addAll(label, easyButton, normalButton, hardButton);
+        box.getChildren().addAll(label, easyButton, normalButton, hardButton, botCall);
         box.setMinWidth(100);
         box.setMinHeight(100);
         box.setSpacing(10);
         box.setPadding(new Insets(10));
         root.getChildren().addAll(box);
+
         buttons();
 
         primaryStage.setTitle("hexagonal deminer");
@@ -156,7 +158,7 @@ public class Main extends Application {
                         field[row][column].columnPixelCoordinate - 8, field[row][column].getBombCount()));
             } else {
                 //просто открытие
-                if (field[row][column].notOpen() && !field[row][column].isFlag
+                if (field[row][column].notOpen() && !field[row][column].getFlagStatus()
                         && field[row][column].getBombCount() == 0) {
                     field[row][column].openHexagon();
                     field[row][column].setFill(Paint.valueOf("#a6a6a6"));
@@ -181,9 +183,9 @@ public class Main extends Application {
     }
 
     static void invertFlag(int row, int column) {
-        if (!field[row][column].isOpen) {
+        if (field[row][column].notOpen()) {
             field[row][column].reverseFlag();
-            if (field[row][column].isFlag) {
+            if (field[row][column].getFlagStatus()) {
                 if (field[row][column].getMinedStatus()) flaggedBomb++;
                 flagField[row][column] = paintFlag(field[row][column].rowPixelCoordinate + 7,
                         field[row][column].columnPixelCoordinate - 5);
@@ -203,7 +205,7 @@ public class Main extends Application {
     }
 
 
-    private static void hexagonsAroundEven() {
+    public static void hexagonsAroundEven() {
         movesAroundForEvenRow.add(new Pair<>(0, -1));
         movesAroundForEvenRow.add(new Pair<>(-1, 0));
         movesAroundForEvenRow.add(new Pair<>(-1, +1));
@@ -212,7 +214,7 @@ public class Main extends Application {
         movesAroundForEvenRow.add(new Pair<>(+1, 0));
     }
 
-    private static void hexagonsAroundOdd() {
+    public static void hexagonsAroundOdd() {
         movesAroundForOddRow.add(new Pair<>(0, -1));
         movesAroundForOddRow.add(new Pair<>(-1, -1));
         movesAroundForOddRow.add(new Pair<>(-1, 0));
@@ -222,7 +224,7 @@ public class Main extends Application {
     }
 
 
-    private static boolean checkOutOfField(int row, int column, Pair<Integer, Integer> coordinates) {
+    public static boolean checkOutOfField(int row, int column, Pair<Integer, Integer> coordinates) {
         int incrementRow = row + coordinates.getKey();
         int incrementColumn = column + coordinates.getValue();
         return 0 <= incrementRow && incrementRow < SIZE_OF_FIELD &&
@@ -303,6 +305,10 @@ public class Main extends Application {
             STRING_SIZE = 25;
             SIZE_OF_FIELD = 15;
             restart();
+        });
+
+        botCall.setOnAction(event -> {
+            SweeperBot bot = new SweeperBot(field, flagField);
         });
 
         hardButton.setOnAction(event -> {

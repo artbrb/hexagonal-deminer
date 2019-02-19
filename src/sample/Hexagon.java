@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polygon;
@@ -7,17 +8,20 @@ import static java.lang.Math.PI;
 import static java.lang.StrictMath.*;
 import static sample.Main.*;
 
-public class Hexagon extends Polygon {
-    public boolean isOpen = false;
+ class Hexagon extends Polygon {
+    private boolean isOpen = false;
     private boolean isMine = false;
-    public boolean isFlag = false;
-    public int numbersOfBombsNear;
-    public double rowPixelCoordinate;
-    public double columnPixelCoordinate;
-    public int columnСoordinate;
-    public int rowCoordinate;
+    private boolean isFlag = false;
+    int numbersOfBombsNear;
+    double rowPixelCoordinate;
+    double columnPixelCoordinate;
+    int columnСoordinate;
+    int rowCoordinate;
 
-    public Hexagon createHexagon(int row, int column, int radius, int intermediateDistance) {
+     Hexagon() {
+     }
+
+     public Hexagon createHexagon(int row, int column, int radius, int intermediateDistance) {
         Hexagon hexagon = new Hexagon();
         for (int i = 0; i < 6; i++) {
             hexagon.getPoints().add(radius * sin(i * PI / 3));
@@ -32,7 +36,7 @@ public class Hexagon extends Polygon {
         hexagon.setTranslateY(hexagon.rowPixelCoordinate);
         hexagon.setFill(Paint.valueOf("#666699"));
 
-        hexagon.setOnMousePressed((MouseEvent event) -> {
+        hexagon.setOnMousePressed(event -> {
             if (!bangAndLoss && !win) {
                 if (event.isPrimaryButtonDown() && !hexagon.getFlagStatus()) {
                     firstClickAlert++;

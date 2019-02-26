@@ -18,8 +18,7 @@ import static sample.Main.*;
     int columnСoordinate;
     int rowCoordinate;
 
-     Hexagon() {
-     }
+     Hexagon() { }
 
      public Hexagon createHexagon(int row, int column, int radius, int intermediateDistance) {
         Hexagon hexagon = new Hexagon();
@@ -47,8 +46,6 @@ import static sample.Main.*;
                     }
 
                     openHexagons(hexagon.rowCoordinate, hexagon.columnСoordinate);
-                    win = (flaggedBomb == NUMBER_OF_MINES) &&
-                            (countOpenedHexagons == ((SIZE_OF_FIELD * SIZE_OF_FIELD) - NUMBER_OF_MINES));
                 }
                 if (event.isSecondaryButtonDown()) {
                     invertFlag(hexagon.rowCoordinate, hexagon.columnСoordinate);

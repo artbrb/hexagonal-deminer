@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -33,8 +34,8 @@ public class Main extends Application {
     private static int STRING_SIZE = 18;
     static int NUMBER_OF_MINES = 60;
     static int flaggedBomb;
-    static boolean win = false;
-    static boolean bangAndLoss = false;
+    public static boolean win = false;
+    public static boolean bangAndLoss = false;
     private static int countBombs = 0;
 
     static List<Pair<Integer, Integer>> movesAroundForEvenRow = new ArrayList<>();
@@ -50,7 +51,7 @@ public class Main extends Application {
     private static Button easyButton = new Button("Easy");
     private static Button normalButton = new Button("Normal");
     private static Button hardButton = new Button("Hard");
-    private static Button botCall = new Button("Bot, please HELP ME");
+    private static Button botCall = new Button("Bot help");
 
 
     public static void main(String[] args) {
@@ -130,7 +131,6 @@ public class Main extends Application {
                                     field[row][column].numbersOfBombsNear++;
                     }
                 }
-
     }
 
     static void openHexagons(int row, int column) {
@@ -180,6 +180,8 @@ public class Main extends Application {
                 }
             }
         }
+        win = (flaggedBomb == NUMBER_OF_MINES) &&
+                (countOpenedHexagons == ((SIZE_OF_FIELD * SIZE_OF_FIELD) - NUMBER_OF_MINES));
     }
 
     static void invertFlag(int row, int column) {
@@ -307,8 +309,8 @@ public class Main extends Application {
             restart();
         });
 
-        botCall.setOnAction(event -> {
-            SweeperBot bot = new SweeperBot(field, flagField);
+        botCall.setOnAction((ActionEvent event) -> {
+            Bot bot = new Bot();
         });
 
         hardButton.setOnAction(event -> {

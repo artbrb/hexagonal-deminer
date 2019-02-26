@@ -210,6 +210,7 @@ class Bot {
         int y = random.nextInt(SIZE_OF_FIELD);
         placementAndCountingBombs(x ,y);
         openHexagons(x, y);
+        firstClickAlert++;
     }
 
 
